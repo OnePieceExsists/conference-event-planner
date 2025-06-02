@@ -80,6 +80,16 @@ const ConferenceDashboard = () => {
     setNewSession({ title: '', speaker: '', time: '', room: '', attendees: 0 });
   };
 
+    // Add this useEffect to refresh sessions when localStorage changes (step 4)
+  useEffect(() => {
+    const handleStorage = () => {
+      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+      setUpcomingSessions(stored ? JSON.parse(stored) : []);
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -135,9 +145,11 @@ const ConferenceDashboard = () => {
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2"
                 onClick={() => {
-                  setShowAddSession(true);
-                  setEditSessionId(null);
-                  setNewSession({ title: '', speaker: '', time: '', room: '', attendees: 0 });
+                  window.open(
+                    "/add-session",
+                    "AddSession",
+                    "width=500,height=700"
+                  );
                 }}
               >
                 <Plus className="w-4 h-4" />
@@ -150,8 +162,11 @@ const ConferenceDashboard = () => {
 
       {/* Add/Edit Session Modal */}
       {showAddSession && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Stronger overlay */}
+          <div className="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
+          {/* Modal */}
+          <div className="relative z-10 bg-white rounded-2xl shadow-2xl border-4 border-blue-600 p-8 w-full max-w-md animate-fade-in">
             <h2 className="text-xl font-bold mb-4">{editSessionId ? "Edit Session" : "Add New Session"}</h2>
             <form onSubmit={handleSaveSession} className="space-y-4">
               <input
