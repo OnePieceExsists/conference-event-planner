@@ -1,7 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, MapPin, BarChart3, Settings, Bell, Search, Plus } from 'lucide-react';
+import { Calendar, Users, MapPin, BarChart3, Settings, Bell, Search, Plus, Star, Clock } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 const LOCAL_STORAGE_KEY = 'conference_sessions';
+
+// Sample data for registration trends
+const registrationData = [
+  { date: 'Jan 1', registrations: 45, earlyBird: 30, regular: 15, student: 0 },
+  { date: 'Jan 8', registrations: 89, earlyBird: 65, regular: 20, student: 4 },
+  { date: 'Jan 15', registrations: 156, earlyBird: 95, regular: 45, student: 16 },
+  { date: 'Jan 22', registrations: 234, earlyBird: 120, regular: 85, student: 29 },
+  { date: 'Jan 29', registrations: 345, earlyBird: 150, regular: 145, student: 50 },
+  { date: 'Feb 5', registrations: 456, earlyBird: 180, regular: 195, student: 81 },
+  { date: 'Feb 12', registrations: 589, earlyBird: 200, regular: 275, student: 114 },
+  { date: 'Feb 19', registrations: 723, earlyBird: 210, regular: 365, student: 148 },
+  { date: 'Feb 26', registrations: 867, earlyBird: 215, regular: 445, student: 207 },
+  { date: 'Mar 5', registrations: 1024, earlyBird: 220, regular: 535, student: 269 },
+  { date: 'Mar 12', registrations: 1247, earlyBird: 225, regular: 645, student: 377 }
+];
+
+// Featured speakers data
+const featuredSpeakers = [
+  { name: "Dr. Sarah Chen", title: "AI Research Director", company: "TechCorp", rating: 4.9, sessions: 3, image: "👩‍💼" },
+  { name: "Mike Rodriguez", title: "Blockchain Expert", company: "CryptoLab", rating: 4.8, sessions: 2, image: "👨‍💻" },
+  { name: "Dr. Emily Watson", title: "Healthcare Innovation", company: "MedTech", rating: 4.7, sessions: 4, image: "👩‍⚕️" }
+];
 
 const ConferenceDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -378,79 +401,160 @@ const ConferenceDashboard = () => {
               </div>
             </div>
 
-
-
-            {/* End Conference Venue Map */}
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Upcoming Sessions */}
-              <div className="bg-white rounded-lg shadow-sm border">
-                <div className="px-6 py-4 border-b">
-                  <h3 className="text-lg font-medium text-gray-900">Upcoming Sessions</h3>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-4">
-                    {filteredSessions.length === 0 ? (
-                      <div className="text-gray-500">No sessions found.</div>
-                    ) : (
-                      filteredSessions.map(session => (
-                        <div key={session.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                          <div>
-                            <h4 className="font-medium text-gray-900">{session.title}</h4>
-                            <p className="text-sm text-gray-500">by {session.speaker}</p>
-                            <div className="flex items-center space-x-4 mt-1">
-                              <span className="text-xs text-gray-500">{session.time}</span>
-                              <span className="text-xs text-gray-500">{session.room}</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-sm font-medium text-blue-600">{session.attendees} attendees</span>
-                            <button
-                              className="ml-2 text-xs text-blue-500 underline"
-                              onClick={() => handleEditSession(session)}
-                            >
-                              Edit
-                            </button>
+            {/* Upcoming Sessions */}
+            <div className="bg-white rounded-lg shadow-sm border">
+              <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-medium text-gray-900">Upcoming Sessions</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {filteredSessions.length === 0 ? (
+                    <div className="text-gray-500">No sessions found.</div>
+                  ) : (
+                    filteredSessions.map(session => (
+                      <div key={session.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                          <h4 className="font-medium text-gray-900">{session.title}</h4>
+                          <p className="text-sm text-gray-500">by {session.speaker}</p>
+                          <div className="flex items-center space-x-4 mt-1">
+                            <span className="text-xs text-gray-500">{session.time}</span>
+                            <span className="text-xs text-gray-500">{session.room}</span>
                           </div>
                         </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-              {/* Recent Notifications */}
-              <div className="bg-white rounded-lg shadow-sm border">
-                <div className="px-6 py-4 border-b">
-                  <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-4">
-                    {notifications.map(notification => (
-                      <div key={notification.id} className="flex items-start space-x-3">
-                        <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
-                          notification.type === 'success' ? 'bg-green-400' :
-                          notification.type === 'warning' ? 'bg-yellow-400' : 'bg-blue-400'
-                        }`}></div>
-                        <div>
-                          <p className="text-sm text-gray-900">{notification.message}</p>
-                          <p className="text-xs text-gray-500">{notification.time}</p>
+                        <div className="text-right">
+                          <span className="text-sm font-medium text-blue-600">{session.attendees} attendees</span>
+                          <button
+                            className="ml-2 text-xs text-blue-500 underline"
+                            onClick={() => handleEditSession(session)}
+                          >
+                            Edit
+                          </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
-            {/* Registration Chart Placeholder */}
+
+            {/* Recent Notifications */}
+            <div className="bg-white rounded-lg shadow-sm border">
+              <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {notifications.map(notification => (
+                    <div key={notification.id} className="flex items-start space-x-3">
+                      <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                        notification.type === 'success' ? 'bg-green-400' :
+                        notification.type === 'warning' ? 'bg-yellow-400' : 'bg-blue-400'
+                      }`}></div>
+                      <div>
+                        <p className="text-sm text-gray-900">{notification.message}</p>
+                        <p className="text-xs text-gray-500">{notification.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Featured Speakers */}
+            <div className="bg-white rounded-lg shadow-sm border">
+              <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-medium text-gray-900">Featured Speakers</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {featuredSpeakers.map((speaker, index) => (
+                    <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                      <div className="text-2xl">{speaker.image}</div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900 text-sm">{speaker.name}</h4>
+                        <p className="text-xs text-gray-500">{speaker.title}</p>
+                        <p className="text-xs text-gray-400">{speaker.company}</p>
+                        <div className="flex items-center mt-1 space-x-2">
+                          <div className="flex items-center">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span className="text-xs text-gray-600 ml-1">{speaker.rating}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="w-3 h-3 text-gray-400" />
+                            <span className="text-xs text-gray-600 ml-1">{speaker.sessions} sessions</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Registration Chart */}
             <div className="bg-white rounded-lg shadow-sm border">
               <div className="px-6 py-4 border-b">
                 <h3 className="text-lg font-medium text-gray-900">Registration Trends</h3>
+                <p className="text-sm text-gray-500 mt-1">Daily registration counts and breakdown by ticket type</p>
               </div>
               <div className="p-6">
-                <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500">Registration analytics chart would go here</p>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={registrationData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip 
+                        formatter={(value, name) => [value, name]}
+                        labelStyle={{ color: '#374151' }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="registrations" 
+                        stroke="#2563eb" 
+                        strokeWidth={3}
+                        name="Total Registrations"
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="earlyBird" 
+                        stroke="#10b981" 
+                        strokeWidth={2}
+                        name="Early Bird"
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="regular" 
+                        stroke="#f59e0b" 
+                        strokeWidth={2}
+                        name="Regular"
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="student" 
+                        stroke="#8b5cf6" 
+                        strokeWidth={2}
+                        name="Student"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex justify-center space-x-6 mt-4 text-sm">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-blue-600 rounded mr-2"></div>
+                    <span>Total Registrations</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-green-500 rounded mr-2"></div>
+                    <span>Early Bird</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-yellow-500 rounded mr-2"></div>
+                    <span>Regular</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-purple-500 rounded mr-2"></div>
+                    <span>Student</span>
                   </div>
                 </div>
               </div>
@@ -540,6 +644,5 @@ const ConferenceDashboard = () => {
     
   );
 };
-
 
 export default ConferenceDashboard;
