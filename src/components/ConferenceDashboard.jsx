@@ -9,6 +9,8 @@ import FeaturedSpeakers from './dashboard/FeaturedSpeakers';
 import RegistrationChart from './dashboard/RegistrationChart';
 import TabContent from './dashboard/TabContent';
 import SessionModal from './dashboard/SessionModal';
+import RegistrationAnalytics from './dashboard/RegistrationAnalytics';
+
 
 const LOCAL_STORAGE_KEY = 'conference_sessions';
 
@@ -132,19 +134,40 @@ const ConferenceDashboard = () => {
         {/* Overview Tab Content */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
+            {/* Stats Section */}
             <StatsCards stats={stats} />
             <VenueMap />
-            <UpcomingSessions 
-              filteredSessions={filteredSessions} 
-              handleEditSession={handleEditSession} 
-            />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <RecentActivity notifications={notifications} />
-              <FeaturedSpeakers />
+
+            {/* Two-Row, Two-Column Grid */}
+            <div className="grid grid-rows-2 gap-6">
+              {/* First Row */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  {/* Left: Upcoming Sessions */}
+                  <UpcomingSessions
+                    filteredSessions={filteredSessions}
+                    handleEditSession={handleEditSession}
+                  />
+                </div>
+                <div>
+                  {/* Right: Featured Speakers */}
+                  <FeaturedSpeakers />
+                </div>
+              </div>
+
+              {/* Second Row */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <RecentActivity notifications={notifications} />
+                </div>
+                <div>
+                  <RegistrationAnalytics />
+                </div>
+              </div>
             </div>
-            <RegistrationChart />
           </div>
         )}
+
 
         <TabContent activeTab={activeTab} />
       </div>
